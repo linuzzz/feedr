@@ -3,17 +3,18 @@
 import feedparser
 import json
 
-import logging
-import logging.handlers
-
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, HttpResponseForbidden
 
+#i can use the . dot because models is in the same folder
 from .models import Source, Feed
+from .feedrefresh import refresh
+from feedr.feedrlog import Flogger
 
 from datetime import datetime
 
+'''
 LOG_FILENAME='feedr.log'
 
 # Set up a specific logger with our desired output level
@@ -31,11 +32,14 @@ handler.setFormatter(formatter)
 flogger.addHandler(handler)
 
 flogger.info('Feedr app start')
+'''
+
 
 # Create your views here.
 
 # do not call this function "login" or it will confuse the login from django.contrib.auth 
 def auth(request):
+   flogger = Flogger()
    error = ""
    
    if request.method == "POST":
@@ -197,12 +201,19 @@ def readall(request):
    return HttpResponse(json_data, content_type="application/json")
 
             
-def refresh(request):
+def fresh(request):
    if not request.user.is_authenticated():   
       return HttpResponseForbidden()
    
-   flogger.info("refreshing...")  
+   #flogger = feedr.feedrlog.Flogger()
+   #flogger.info("refreshing outer...")
    
+   jsonr = refresh()
+
+   #flogger.info("stop refreshing outer...")
+         
+   return HttpResponse(jsonr, content_type="application/json")      
+   '''   
    source = Source.objects.all()
 
    news = 0   
@@ -283,7 +294,8 @@ def refresh(request):
    response_data['result'] = 'True'
    response_data['news'] = str(news)
    json_data = json.dumps(response_data)
-   return HttpResponse(json_data, content_type="application/json")
+   '''
+   
    
 def logs(request):
    if not request.user.is_authenticated():   
