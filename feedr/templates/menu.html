@@ -284,8 +284,13 @@ $(document).ready(function() {
          {% else %}
             <span class="fa fa-hand-o-down" id="fav" title="{{f.id}}"></span>
          {% endif %}
-         
-         </td><td><span class="fa fa-file" id="read" title="{{f.id}}"></span></td></tr>    
+
+         {% if f.read == 0 %}
+            </td><td><span class="fa fa-file" id="read" title="{{f.id}}"></span></td></tr> 
+         {% else %}
+            </td><td><span class="fa fa-file-o" id="read" title="{{f.id}}"></span></td></tr>
+         {% endif %}
+            
          {% endfor %}    
         
     </tbody>
